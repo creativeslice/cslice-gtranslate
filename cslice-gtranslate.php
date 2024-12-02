@@ -18,7 +18,6 @@ define('CSLICE_GTRANSLATE_VERSION', '2024.11.29');
 define('CSLICE_GTRANSLATE_PATH', plugin_dir_path(__FILE__));
 define('CSLICE_GTRANSLATE_URL', plugin_dir_url(__FILE__));
 
-// Uses
 class CSliceGTranslate {
     public function __construct() {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts'], 999);
@@ -27,23 +26,21 @@ class CSliceGTranslate {
     public function enqueue_scripts() {
         if (is_admin()) return;
 
-        wp_enqueue_style(
-            'cslice-gtranslate-styles',
+        wp_enqueue_style('cslice-gtranslate-style',
             CSLICE_GTRANSLATE_URL . 'style.css',
             [],
             CSLICE_GTRANSLATE_VERSION
         );
 
-        // Plugin scripts
-        wp_enqueue_script(
-            'cslice-gtranslate-script',
-            CSLICE_GTRANSLATE_URL . 'cslice-gtranslate.js',
+        // Plugin scripts (currently manually compressed)
+        wp_enqueue_script('cslice-gtranslate-script',
+            CSLICE_GTRANSLATE_URL . 'script.min.js',
             [],
             CSLICE_GTRANSLATE_VERSION,
             ['strategy' => 'defer', 'in_footer' => true]
         );
 
-        // Pass ALL necessary data to JavaScript
+        // Localize script
         wp_localize_script('cslice-gtranslate-script', 'csliceGTranslate', [
             'languages' => $this->get_languages(),
             'apiUrl' => 'https://translate.google.com/translate_a/element.js',
@@ -51,16 +48,6 @@ class CSliceGTranslate {
             'includedLanguages' => implode(',', array_keys($this->get_languages()))
         ]);
     }
-
-    /**
-     * To update languages from theme:
-     * add_filter('cslice_gtranslate_languages', 'cslice_gtranslate_theme_languages');
-     * function cslice_gtranslate_theme_languages($languages) {
-     *    $languages['en'] = 'English';
-     *    $languages['es'] = 'Spanish';
-     *   return $languages;
-     * }
-     */
 
     private function get_languages() {
         return apply_filters('cslice_gtranslate_languages', [

@@ -1,7 +1,7 @@
 # Google Translate - Plugin
 Creative Slice GTranslate script to enable simple Google translation using free API.
 
-## To Use:
+## Usage:
 
 To enable, use `.cslice-gtranslate-wrapper` class on any block:
 
@@ -12,7 +12,7 @@ To enable, use `.cslice-gtranslate-wrapper` class on any block:
 5) Use classname `globe` and `simple` to show a globe icon with arrow.
 
 ## Customize Languages:
-Default languages to select: 
+Default languages to select:
 
 - 'en' => 'English', (default)
 - 'es' => 'Spanish',
