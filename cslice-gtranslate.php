@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       Creative Slice - Google Translate
- * Description:       Add GTranslate translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block.
- * Version:           2024.12.03
+ * Description:       Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block.
+ * Version:           2024.12.03.1
  * Requires at least: 6.6
  * Tested up to:      6.7.1
  * Requires PHP:      8.0
@@ -21,7 +21,8 @@ if (is_admin()) {
     require_once plugin_dir_path(__FILE__) . 'cslice-plugin-updater-public.php';
     new CSlice\GTranslate\Plugin_Updater(
         __FILE__,
-        'creativeslice/cslice-gtranslate'
+        'creativeslice/cslice-gtranslate',
+        'main'
     );
 }
 
@@ -29,9 +30,6 @@ if (!defined('CSLICE_GTRANSLATE_VERSION')) {
 	$plugin_data = get_file_data(__FILE__, array('Version' => 'Version'));
     define('CSLICE_GTRANSLATE_VERSION', $plugin_data['Version']);
 }
-
-define('CSLICE_GTRANSLATE_PATH', plugin_dir_path(__FILE__));
-define('CSLICE_GTRANSLATE_URL', plugin_dir_url(__FILE__));
 
 class CSliceGTranslate {
     public function __construct() {
@@ -41,15 +39,17 @@ class CSliceGTranslate {
     public function enqueue_scripts() {
         if (is_admin()) return;
 
-        wp_enqueue_style('cslice-gtranslate-style',
-            CSLICE_GTRANSLATE_URL . 'style.css',
+        wp_enqueue_style(
+            'cslice-gtranslate-style',
+            plugin_dir_url(__FILE__) . 'style.css',
             [],
             CSLICE_GTRANSLATE_VERSION
         );
 
         // TODO: Add build process for script.min.js
-        wp_enqueue_script('cslice-gtranslate-script',
-            CSLICE_GTRANSLATE_URL . 'script.min.js', // manually compressed
+        wp_enqueue_script(
+            'cslice-gtranslate-script',
+            plugin_dir_url(__FILE__) . 'script.min.js', // manually compressed
             [],
             CSLICE_GTRANSLATE_VERSION,
             ['strategy' => 'defer', 'in_footer' => true]
