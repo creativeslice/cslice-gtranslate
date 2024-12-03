@@ -31,4 +31,6 @@ function cslice_gtranslate_theme_languages($languages) {
 add_filter('cslice_gtranslate_languages', 'cslice_gtranslate_theme_languages');
 ```
 
-## Updates
+## Updates:
+- Update from WordPress admin from releases in public repo.
+- TODO: Automate plugin zip creation for releases in GitHub

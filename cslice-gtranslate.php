@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       Creative Slice - Google Translate
- * Description:       Add GTranslate widget to #google-translate-wrapper div
- * Version:           2024.11.29
+ * Description:       Add GTranslate translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block.
+ * Version:           2024.12.03
  * Requires at least: 6.6
  * Tested up to:      6.7.1
  * Requires PHP:      8.0
@@ -14,7 +14,22 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
 
-define('CSLICE_GTRANSLATE_VERSION', '2024.11.29');
+/**
+ * Plugin updater - PUBLIC REPO
+ */
+if (is_admin()) {
+    require_once plugin_dir_path(__FILE__) . 'cslice-plugin-updater-public.php';
+    new CSlice\GTranslate\Plugin_Updater(
+        __FILE__,
+        'creativeslice/cslice-gtranslate'
+    );
+}
+
+if (!defined('CSLICE_GTRANSLATE_VERSION')) {
+	$plugin_data = get_file_data(__FILE__, array('Version' => 'Version'));
+    define('CSLICE_GTRANSLATE_VERSION', $plugin_data['Version']);
+}
+
 define('CSLICE_GTRANSLATE_PATH', plugin_dir_path(__FILE__));
 define('CSLICE_GTRANSLATE_URL', plugin_dir_url(__FILE__));
 
@@ -32,15 +47,14 @@ class CSliceGTranslate {
             CSLICE_GTRANSLATE_VERSION
         );
 
-        // Plugin scripts (currently manually compressed)
+        // TODO: Add build process for script.min.js
         wp_enqueue_script('cslice-gtranslate-script',
-            CSLICE_GTRANSLATE_URL . 'script.min.js',
+            CSLICE_GTRANSLATE_URL . 'script.min.js', // manually compressed
             [],
             CSLICE_GTRANSLATE_VERSION,
             ['strategy' => 'defer', 'in_footer' => true]
         );
 
-        // Localize script
         wp_localize_script('cslice-gtranslate-script', 'csliceGTranslate', [
             'languages' => $this->get_languages(),
             'apiUrl' => 'https://translate.google.com/translate_a/element.js',
@@ -49,6 +63,7 @@ class CSliceGTranslate {
         ]);
     }
 
+    // Languages can be overridden by theme.
     private function get_languages() {
         return apply_filters('cslice_gtranslate_languages', [
             'en' => 'English',
