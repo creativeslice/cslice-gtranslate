@@ -7,16 +7,25 @@ html.translated-ltr body { top: 0 !important; }
     position: relative;
 }
 
-.cslice-language-switcher {
+select.cslice-language-switcher {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-color: transparent;
     border-radius: 0;
-    color: currentColor;
     cursor: pointer;
     padding: .4em;
     width: 100%;
+    color: currentColor;
+    background-color: transparent;
+}
+
+/* Fix for Windows Chrome */
+select.cslice-language-switcher option {
+    color: black;
+    background-color: white;
+	text-align: left;
+	padding: 4px 8px;
+	margin: 0;
 }
 
 
