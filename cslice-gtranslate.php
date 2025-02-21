@@ -1,10 +1,11 @@
 <?php
 /**
  * Plugin Name:       Creative Slice - Google Translate
+ * Plugin URI:        https://github.com/creativeslice/cslice-gtranslate
  * Description:       Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block.
- * Version:           2025.02.03
+ * Version:           2025.02.20
  * Requires at least: 6.6
- * Tested up to:      6.7.1
+ * Tested up to:      6.7.2
  * Requires PHP:      8.0
  * Author:            Creative Slice
  * Author URI:        https://creativeslice.com
@@ -39,12 +40,19 @@ class CSliceGTranslate {
     public function enqueue_scripts() {
         if (is_admin()) return;
 
-        wp_enqueue_style(
-            'cslice-gtranslate-style',
-            plugin_dir_url(__FILE__) . 'style.css',
-            [],
-            CSLICE_GTRANSLATE_VERSION
-        );
+        /**
+         * Allow themes to disable default styles
+         *
+         * @use: add_filter('cslice_gtranslate_load_styles', '__return_false');
+         */
+        if (apply_filters('cslice_gtranslate_load_styles', true)) {
+            wp_enqueue_style(
+                'cslice-gtranslate-style',
+                plugin_dir_url(__FILE__) . 'style.css',
+                [],
+                CSLICE_GTRANSLATE_VERSION
+            );
+        }
 
         // TODO: Add build process for script.min.js
         wp_enqueue_script(
@@ -63,15 +71,16 @@ class CSliceGTranslate {
         ]);
     }
 
-    // Languages can be overridden by theme.
+    // Languages can be overridden by theme (see README for example)
     private function get_languages() {
         return apply_filters('cslice_gtranslate_languages', [
             'en' => 'English',
             'es' => 'Spanish',
             'fr' => 'French',
             'de' => 'German',
+            'ar' => 'Arabic',
             'zh-CN' => 'Chinese',
-            'ar' => 'Arabic'
+            'ja' => 'Japanese',
         ]);
     }
 }
