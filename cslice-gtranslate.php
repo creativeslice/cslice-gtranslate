@@ -2,8 +2,8 @@
 /**
  * Plugin Name:       Creative Slice - Google Translate
  * Plugin URI:        https://github.com/creativeslice/cslice-gtranslate
- * Description:       Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block.
- * Version:           2025.02.20
+ * Description:       Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block. Style and languages are configured under Settings > General.
+ * Version:           2026.07.24
  * Requires at least: 6.6
  * Tested up to:      6.7.2
  * Requires PHP:      8.0
@@ -32,6 +32,13 @@ if (!defined('CSLICE_GTRANSLATE_VERSION')) {
     define('CSLICE_GTRANSLATE_VERSION', $plugin_data['Version']);
 }
 
+if (!defined('CSLICE_GTRANSLATE_FILE')) {
+    define('CSLICE_GTRANSLATE_FILE', __FILE__);
+}
+
+// Front end needs the getters too, so this loads on every request.
+require_once plugin_dir_path(__FILE__) . 'includes/settings.php';
+
 class CSliceGTranslate {
     public function __construct() {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts'], 999);
@@ -39,6 +46,11 @@ class CSliceGTranslate {
 
     public function enqueue_scripts() {
         if (is_admin()) return;
+
+        $style = cslice_gtranslate_get_style();
+
+        // Nothing loads at all when the switcher is turned off.
+        if ($style === 'none') return;
 
         /**
          * Allow themes to disable default styles
@@ -54,6 +66,16 @@ class CSliceGTranslate {
             );
         }
 
+        $languages = cslice_gtranslate_get_languages();
+
+        // First language in the list is the one the site is written in.
+        $default_lang = array_key_first($languages) ?: 'en';
+
+        if ($style === 'flags') {
+            $this->enqueue_flags_widget($languages, $default_lang);
+            return;
+        }
+
         // TODO: Add build process for script.min.js
         wp_enqueue_script(
             'cslice-gtranslate-script',
@@ -64,24 +86,41 @@ class CSliceGTranslate {
         );
 
         wp_localize_script('cslice-gtranslate-script', 'csliceGTranslate', [
-            'languages' => $this->get_languages(),
+            'languages' => $languages,
             'apiUrl' => 'https://translate.google.com/translate_a/element.js',
-            'defaultLang' => 'en',
-            'includedLanguages' => implode(',', array_keys($this->get_languages()))
+            'defaultLang' => $default_lang,
+            'includedLanguages' => implode(',', array_keys($languages))
         ]);
     }
 
-    // Languages can be overridden by theme (see README for example)
-    private function get_languages() {
-        return apply_filters('cslice_gtranslate_languages', [
-            'en' => 'English',
-            'es' => 'Spanish',
-            'fr' => 'French',
-            'de' => 'German',
-            'ar' => 'Arabic',
-            'zh-CN' => 'Chinese',
-            'ja' => 'Japanese',
+    /**
+     * Flags style: GTranslate.io's float widget (flag dropdown), which loads
+     * Google Translate itself. The plugin's own switcher script is not enqueued
+     * in this mode.
+     */
+    private function enqueue_flags_widget($languages, $default_lang) {
+        wp_enqueue_script(
+            'cslice-gtranslate-flags',
+            'https://cdn.gtranslate.net/widgets/latest/float.js',
+            [],
+            null,
+            ['strategy' => 'defer', 'in_footer' => true]
+        );
+
+        // GTranslate's own defaults handle the rest (fixed bottom-left, 2d flags).
+        $settings = apply_filters('cslice_gtranslate_widget_settings', [
+            'default_language' => $default_lang,
+            'languages' => array_keys($languages),
+            'wrapper_selector' => '.cslice-gtranslate-wrapper',
         ]);
+
+        // Paragraph wrappers hold placeholder text the widget would append to.
+        wp_add_inline_script(
+            'cslice-gtranslate-flags',
+            'window.gtranslateSettings = ' . wp_json_encode($settings) . ';'
+            . "document.querySelectorAll('p.cslice-gtranslate-wrapper').forEach(function(el){el.textContent='';});",
+            'before'
+        );
     }
 }
 

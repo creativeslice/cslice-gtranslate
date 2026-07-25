@@ -1,6 +1,8 @@
 # Google Translate - Plugin
 Creative Slice GTranslate script to enable simple Google translation using free API.
 
+- https://gtranslate.io/website-translator-widget
+
 ## Usage:
 
 To enable, use `.cslice-gtranslate-wrapper` class on any block:
@@ -16,17 +18,48 @@ To enable, use `.cslice-gtranslate-wrapper` class on any block:
 <!-- /wp:paragraph -->
 ```
 
-## Customize Languages:
-Default languages to select:
+## Settings:
 
-- 'en' => 'English', (default)
-- 'es' => 'Spanish',
-- 'fr' => 'French',
-- 'de' => 'German',
-- 'zh-CN' => 'Chinese',
-- 'ar' => 'Arabic'
+**Settings > General**, in the "Google Translate" section. There is also a Settings link on the plugin's row on the Plugins screen.
 
-To update langauge support, add filter to theme functions.php:
+### Switcher style
+- **Simple** (default) - the plugin's own dropdown of language names. This is the style the block classnames above (`globe`, `globe-white`, `simple`, icon block) apply to.
+- **Flags** - GTranslate's flag dropdown (`float.js`), loaded from `cdn.gtranslate.net`. It renders itself **fixed in the bottom-left corner** of the page, so put the wrapper class on a group block; it does not sit inline where the block is. The paragraph and icon block layouts are for the Simple style only.
+
+- **None** - hides the switcher and loads no CSS or JS at all. Use this to turn translation off without deactivating the plugin.
+
+To place the Flags widget inline instead of floating, use the widget settings filter below:
+```
+add_filter('cslice_gtranslate_widget_settings', function($settings) {
+	$settings['switcher_horizontal_position'] = 'inline';
+
+	return $settings;
+});
+```
+
+### Languages
+One language per line as `code|Label`:
+
+```
+en|English
+es|Spanish
+ar|Arabic
+zh-CN|Chinese (Simplified)
+```
+
+- The **first line is the language the site is written in** - the language Google translates from.
+- Labels are only used by the Simple style. The Flags style supplies its own language names.
+- Lines without a valid language code are ignored. Saving an empty box restores the defaults.
+- Codes are Google Translate codes (`zh-CN`, `zh-TW`, `iw` for Hebrew, `jw` for Javanese).
+
+Defaults: English, Spanish, French, German, Arabic, Chinese, Japanese.
+
+## Filters:
+
+All filters run after the saved settings, so a theme filter overrides the admin screen.
+
+### Customize Languages
+To update language support, add filter to theme functions.php:
 ```
 function cslice_gtranslate_theme_languages($languages) {
 	$languages['en'] = 'English';
@@ -44,6 +77,25 @@ function cslice_gtranslate_theme_languages($languages) {
 	return $languages;
 }
 add_filter('cslice_gtranslate_languages', 'cslice_gtranslate_theme_languages');
+```
+
+### Switcher Style
+```
+add_filter('cslice_gtranslate_style', fn() => 'simple');
+```
+
+### GTranslate Widget Settings
+Flags style only. Passed to `window.gtranslateSettings`; see the widget options at the link above.
+```
+add_filter('cslice_gtranslate_widget_settings', function($settings) {
+	$settings['switcher_horizontal_position'] = 'right'; // left (default), right, inline
+	$settings['switcher_vertical_position'] = 'top';     // bottom (default), top
+	$settings['float_switcher_open_direction'] = 'bottom';
+	$settings['native_language_names'] = true;
+	$settings['flag_style'] = '3d';
+
+	return $settings;
+});
 ```
 
 ### Disable Plugin Styles
@@ -72,3 +124,11 @@ html.translated-ltr body {
 ## Updates:
 - Update from WordPress admin from releases in public repo.
 - TODO: Automate plugin zip creation for releases in GitHub
+
+## CHANGELOG
+
+### 2026-07-24
+- Added Settings > General options for switcher style (Simple / Flags / None) and the language list.
+- Added Flags style, using the GTranslate.io float widget.
+- Default language now comes from the first language in the list instead of being hardcoded to English.
+- Added `cslice_gtranslate_style` and `cslice_gtranslate_widget_settings` filters.
