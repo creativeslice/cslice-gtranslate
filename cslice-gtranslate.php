@@ -3,9 +3,9 @@
  * Plugin Name:       Creative Slice - Google Translate
  * Plugin URI:        https://github.com/creativeslice/cslice-gtranslate
  * Description:       Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block. Style and languages are configured under Settings > General.
- * Version:           2026.07.24
+ * Version:           26.08.03
  * Requires at least: 6.6
- * Tested up to:      6.7.2
+ * Tested up to:      7.0
  * Requires PHP:      8.0
  * Author:            Creative Slice
  * Author URI:        https://creativeslice.com
@@ -14,18 +14,6 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; } // Exit if accessed directly
-
-/**
- * Plugin updater - PUBLIC REPO
- */
-if (is_admin()) {
-    require_once plugin_dir_path(__FILE__) . 'cslice-plugin-updater-public.php';
-    new CSlice\GTranslate\Plugin_Updater(
-        __FILE__,
-        'creativeslice/cslice-gtranslate',
-        'main'
-    );
-}
 
 if (!defined('CSLICE_GTRANSLATE_VERSION')) {
 	$plugin_data = get_file_data(__FILE__, array('Version' => 'Version'));
@@ -52,6 +40,8 @@ class CSliceGTranslate {
         // Nothing loads at all when the switcher is turned off.
         if ($style === 'none') return;
 
+        $asset = require plugin_dir_path(__FILE__) . 'build/index.asset.php';
+
         /**
          * Allow themes to disable default styles
          *
@@ -60,10 +50,11 @@ class CSliceGTranslate {
         if (apply_filters('cslice_gtranslate_load_styles', true)) {
             wp_enqueue_style(
                 'cslice-gtranslate-style',
-                plugin_dir_url(__FILE__) . 'style.css',
+                plugin_dir_url(__FILE__) . 'build/style-index.css',
                 [],
-                CSLICE_GTRANSLATE_VERSION
+                $asset['version']
             );
+            wp_style_add_data('cslice-gtranslate-style', 'rtl', 'replace');
         }
 
         $languages = cslice_gtranslate_get_languages();
@@ -76,12 +67,11 @@ class CSliceGTranslate {
             return;
         }
 
-        // TODO: Add build process for script.min.js
         wp_enqueue_script(
             'cslice-gtranslate-script',
-            plugin_dir_url(__FILE__) . 'script.min.js', // manually compressed
-            [],
-            CSLICE_GTRANSLATE_VERSION,
+            plugin_dir_url(__FILE__) . 'build/index.js',
+            $asset['dependencies'],
+            $asset['version'],
             ['strategy' => 'defer', 'in_footer' => true]
         );
 

@@ -1,0 +1,17 @@
+{
+	"name": "cslice-gtranslate",
+	"description": "Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block. Style and languages are configured under Settings > General.",
+	"author": "Creative Slice",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"start": "wp-scripts start",
+		"build": "wp-scripts build",
+		"format": "wp-scripts format",
+		"plugin-zip": "wp-scripts plugin-zip && NAME=$(jq -r .name package.json) && VERSION=$(grep 'Version:' $NAME.php | sed 's/.*Version: *\\([^ ]*\\).*/\\1/') && mv $NAME.zip $NAME-$VERSION.zip",
+		"packages-update": "wp-scripts packages-update",
+		"release": "npm run format && npm run build && npm run plugin-zip"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^34.0.0"
+	}
+}

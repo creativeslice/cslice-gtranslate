@@ -122,10 +122,14 @@ html.translated-ltr body {
 ```
 
 ## Updates:
-- Update from WordPress admin from releases in public repo.
-- TODO: Automate plugin zip creation for releases in GitHub
+- No auto-updater. Install new releases manually (upload/replace plugin files).
+- Build a release zip with `npm run plugin-zip` (requires `npm install` first), or `npm run release` to format + build + zip in one step.
 
 ## CHANGELOG
+
+### 2026-08-03
+- Removed the GitHub-releases auto-updater; installs are manual now.
+- Added `@wordpress/scripts` build tooling: `src/` is now the JS/CSS source, `npm run build` outputs to `build/`, `npm run plugin-zip` produces a version-stamped release zip.
 
 ### 2026-07-24
 - Added Settings > General options for switcher style (Simple / Flags / None) and the language list.
