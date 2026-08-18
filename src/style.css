@@ -5,6 +5,10 @@ html.translated-ltr body { top: 0 !important; }
 /* Language switcher base styles */
 .cslice-gtranslate-wrapper {
     position: relative;
+}
+
+.gt_float_switcher {
+    font-size: 18px;
     text-align: left;
 }
 
@@ -18,10 +22,6 @@ select.cslice-language-switcher {
     width: 100%;
     color: currentColor;
     background-color: transparent;
-}
-
-.cslice-gtranslate-wrapper .gt_float_switcher {
-    font-size: 18px;
 }
 
 /* Fix for Windows Chrome */

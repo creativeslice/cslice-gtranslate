@@ -8,7 +8,6 @@
  * Tested up to:      7.1
  * Requires PHP:      8.0
  * Author:            Creative Slice
- * Author URI:        https://creativeslice.com
  * License:           GPL-2.0-or-later
  * Text Domain:       cslice-gtranslate
  */
