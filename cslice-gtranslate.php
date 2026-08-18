@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name:       Creative Slice - Google Translate
+ * Plugin Name:       Creative Slice - Google Translate Widget
  * Plugin URI:        https://github.com/creativeslice/cslice-gtranslate
  * Description:       Add GTranslate language translation widget to .cslice-gtranslate-wrapper div, paragraph or icon block. Style and languages are configured under Settings > General.
- * Version:           26.08.03
+ * Version:           26.08.18
  * Requires at least: 6.6
- * Tested up to:      7.0
+ * Tested up to:      7.1
  * Requires PHP:      8.0
  * Author:            Creative Slice
  * Author URI:        https://creativeslice.com

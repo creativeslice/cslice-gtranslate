@@ -12,6 +12,6 @@
 		"release": "npm run format && npm run build && npm run plugin-zip"
 	},
 	"devDependencies": {
-		"@wordpress/scripts": "^34.0.0"
+		"@wordpress/scripts": "^34.1.0"
 	}
 }
